@@ -1,37 +1,83 @@
 
 
+function isWhitespace(cur){
+	if (cur === '\u0020' || cur === '\u0009' || cur === '\u000A' ||  cur === '\u000C' || cur === '\u000D') {
+		return true;
+	}
+	else return false;
+}
+
 function tokenize(X){
-	var reg = [];
-	reg.push(/[A-Za-z0-9]+/);
-	reg.push(/[0-9]+[.]?[0-9]*/);
-	reg.push(/[^A-Za-z0-9\s<>]/);
-	reg.push(/<[^>/]*>/);
-	reg.push(/<[^>]*\/>/);
-	reg.push(/<\/[^>]*>/);
-	reg.push(/\s+/);
-
-
-	//This only works because no string satisfying a regex is a prefix to a string which satisfies a different regex;
-	var lastgood = new Array();
-	var r =0;
-	var accum = new Array();
-	var s = "";
-	X += "!";
-	for(var index=0; index<X.length; index++){
-		s+=X.charAt(index);
-		for(r=0;r<reg.length; r++){
-			if(reg[r].exec(s)!=null && reg[r].exec(s)[0].toString()===s){
-				lastgood[r] = s;
-			} else if (lastgood[r]!=null){
-				accum.push(lastgood[r]);
-				lastgood= new Array();
-				s=X.charAt(index);
-				r=-1;
+	
+	var state=1;
+	var tokenQueue = [];
+	var index=0;
+	var accum="";
+	
+	for(var i=0;i<=X.length;i++){
+		c= X.charAt(i);
+		if(!c) state =3;
+		if(state==1){
+			if(c=='<'){
+				accum+=c;
+				state = 2;
+				continue;
+			}
+			else if(isWhitespace(c)){
+				state = 4;
+				continue;
+				
+			}
+			else{
+				accum+=c;
+				state = 5;
+				continue;
 			}
 		}
+		else if(state ==2){
+			accum+=c;
+			if(c=='>'){
+				state=3;	
+			}
+			continue;
+		}
+		else if(state ==3){
+			
+			tokenQueue.push(accum);
+			accum="";
+			state=1;
+			if(i==X.length) return tokenQueue;
+			i--;
+			continue;
+		}
+		else if(state ==4){
+			if(!isWhitespace(c)){
+				i--;
+				accum = " ";
+				state=3;
+			}
+			continue;
+		}
+		else if(state ==5){
+			if(c=='<'){
+				i--;
+				state=3;
+			}
+			else if(isWhitespace(c)){
+				i--;
+				state=3;
+			}
+			else 
+				accum+=c;
+			continue;
+			
+		}
+		
 	}
-	return accum;
+	return tokenQueue;
 }
+
+
 
 function objectFactory(x,y){
 	return {
