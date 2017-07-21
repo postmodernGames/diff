@@ -1,3 +1,4 @@
+"use strict";
 
 function isWhitespace(cur){
 	if (cur === '\u0020' || cur === '\u0009' || cur === '\u000A' ||  cur === '\u000C' || cur === '\u000D') {
@@ -12,6 +13,7 @@ function tokenize(X){
 	var tokenQueue = [];
 	var index=0;
 	var accum="";
+	var c;
 	
 	for(var i=0;i<=X.length;i++){
 		c= X.charAt(i);
@@ -103,8 +105,8 @@ function typeSort(A){
 	for(var i=0;i<A.length;i++){
 		if(A[i].type>0){
 			var j=i;
-			s = [];
-			t = [];
+			var s = [];
+			var t = [];
 			while(A[j].type>0 || A[j].value === " "){
 				if(A[j].type==1 || A[j].value === " ") s.push(A[j]);
 				if(A[j].type==2 || A[j].value === " ") t.push(A[j]);
@@ -121,8 +123,8 @@ function typeSort(A){
 function diff(A,B){
 	
 	
-	X = tokenize(A); 
-	Y = tokenize(B);
+	var X = tokenize(A); 
+	var Y = tokenize(B);
 	var m = X.length +1;
 	var n = Y.length +1;
     var C = new Array(m, n);
