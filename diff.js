@@ -1,5 +1,4 @@
 
-
 function isWhitespace(cur){
 	if (cur === '\u0020' || cur === '\u0009' || cur === '\u000A' ||  cur === '\u000C' || cur === '\u000D') {
 		return true;
@@ -43,7 +42,7 @@ function tokenize(X){
 		}
 		else if(state ==3){
 			
-			tokenQueue.push(accum);
+			if(accum) tokenQueue.push(accum);
 			accum="";
 			state=1;
 			if(i==X.length) return tokenQueue;
@@ -53,7 +52,7 @@ function tokenize(X){
 		else if(state ==4){
 			if(!isWhitespace(c)){
 				i--;
-				accum = " ";
+				//accum = " ";
 				state=3;
 			}
 			continue;
@@ -77,8 +76,6 @@ function tokenize(X){
 	return tokenQueue;
 }
 
-
-
 function objectFactory(x,y){
 	return {
 		"type" : x,
@@ -101,7 +98,6 @@ function printDiff(C, S, X, Y, i, j){
 		printDiff(C, S, X, Y, i-1, j);
 	};
 }
-
 
 function typeSort(A){
 	for(var i=0;i<A.length;i++){
@@ -145,14 +141,14 @@ function diff(A,B){
 				C[i+1][j+1] = Math.max(C[i+1][j], C[i][j+1]);
 		}
 	}
-	var tau = 0.6;
+	var tau = 0.3;
 	var LCSL =  C[m-1][n-1];
 	if(LCSL<tau*X.length){
-		return "<p> Old text: " + A + "</p><br /><p> New Text: " + B +"</p>";
+		return "<p> Current text: " + A + "</p><br /><p> Proposed Text: " + B +"</p>";
 	} else {
 		var S = [];
 		printDiff(C,S,X,Y,X.length-1,Y.length-1);
-		return typeSort(S).map(function(a){return a.value;}).join("");
+		return typeSort(S).map(function(a){return a.value;}).join(" ");
 	}
 		
 }
