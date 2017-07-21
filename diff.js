@@ -88,28 +88,30 @@ function objectFactory(x,y){
 //function printDiff(C[0..m,0..n], X[1..m], Y[1..n], i, j){		
 function printDiff(C, S, X, Y, i, j){
 	if (i >=0  && j >=0 && X[i] == Y[j]){
-		S.unshift(objectFactory(0,X[i]));
+		S.unshift(objectFactory(1,X[i]));
 		printDiff(C, S, X, Y, i-1, j-1);
 	}
 	else if(j >=0 && (i == -1 || C[i+1][j] >= C[i][j+1])){
-		S.unshift(objectFactory(1,"<font color='green'>" + Y[j] + "</font>"));
+		S.unshift(objectFactory(2,"<font color='green'>" + Y[j] + "</font>"));
 		printDiff(C, S, X, Y, i, j-1);
 	}
 	else if(i >= 0 && (j == -1 || C[i+1][j] < C[i][j+1])){
-		S.unshift(objectFactory(2,"<s><font color='red'>" + X[i] + "</font></s>"));
+		S.unshift(objectFactory(3,"<s><font color='red'>" + X[i] + "</font></s>"));
 		printDiff(C, S, X, Y, i-1, j);
 	};
 }
 
 function typeSort(A){
+	if(!A) return "S undefined";
 	for(var i=0;i<A.length;i++){
-		if(A[i].type>0){
+			if(A[i]==null) return "problem at " + i;
+		if(A[i].type>1){
 			var j=i;
 			var s = [];
 			var t = [];
-			while(A[j].type>0 || A[j].value === " "){
-				if(A[j].type==1 || A[j].value === " ") s.push(A[j]);
-				if(A[j].type==2 || A[j].value === " ") t.push(A[j]);
+			while(A[j] && A[j].type && (A[j].type>1 || isWhitespace(A[j].value))){
+				if(A[j].type==2 || A[j].value === " ") s.push(A[j]);
+				if(A[j].type==3 || A[j].value === " ") t.push(A[j]);
 				j++;
 			}
 			var k = i;
@@ -119,6 +121,7 @@ function typeSort(A){
 	}
 	return A;
 }
+
 
 function diff(A,B){
 	
